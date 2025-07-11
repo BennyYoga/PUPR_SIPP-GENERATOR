@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Halaman Page</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 10px;
+        max-width: 100vw;
+        overflow-x: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* Buat judul lebih proporsional dan responsive */
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #343a40;
+      }
+      .header-x {
+        font-size: 1.4rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #495057;
+      }
+      .header-y {
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        margin-bottom: 0.8rem;
+        color: #6c757d;
+      }
+
+      /* Responsive wrapper untuk tabel agar scroll horizontal */
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Bootstrap sudah mengatur banyak style, tapi kita kurangi padding supaya lebih ringkas */
+      table.table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 0.9rem;
+        word-wrap: break-word; /* supaya teks di td bisa wrap */
+      }
+
+      table.table th,
+      table.table td {
+        padding: 0.4rem 0.6rem;
+        border: 1px solid #dee2e6;
+        vertical-align: middle;
+        text-align: center;
+      }
+      table.table th {
+        font-size: 0.75rem; /* teks header lebih kecil */
+        padding: 0.2rem 0.4rem; /* padding header lebih rapat */
+        background-color: #e9ecef;
+        font-weight: 600;
+        white-space: normal;
+        text-align: center;
+      }
+
+      table.table td {
+        font-size: 0.75rem; /* isi tabel sedikit lebih kecil juga */
+        padding: 0.15rem 0.4rem; /* padding isi tabel lebih rapat */
+        white-space: normal;
+        overflow-wrap: break-word;
+        max-width: 150px;
+        text-align: center;
+      }
+
+      table.table th:first-child {
+        text-align: left;
+        width: 150px; /* Lebar tetap untuk kolom pertama */
+        max-width: 150px; /* Biar gak melebar */
+        white-space: normal; /* supaya header bisa wrap kalau panjang */
+      }
+
+      /* Kolom pertama isi tabel */
+      table.table td:first-child {
+        text-align: left;
+        max-width: 150px;
+        white-space: normal; /* supaya teks bisa wrap */
+        padding-left: 0.5rem; /* sedikit jarak dari kiri */
+      }
+      #content {
+        width: 75%;
+        margin: 0 auto; /* supaya posisinya di tengah */
+      }
+
+      .header-x {
+        font-size: 1.4rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: white;
+        background-color: #495057;
+        text-align: center;
+        padding: 0.5rem;
+      }
+
+      .header-y {
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 0.8rem;
+        color: white;
+        background-color: #8a9197;
+        text-align: center;
+        padding: 0.25rem;
+      }
+
+      .divider {
+        height: 1px;
+        background-color: #dee2e6;
+        margin: 1.5rem 0;
+      }
+
+      #loading {
+        background-color: #f8f9fa;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="loading"
+      class="d-flex justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <div class="text-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2 text-primary fw-semibold">Memuat data, mohon tunggu...</div>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-light bg-light border-bottom shadow-sm py-2">
+      <div class="container-fluid justify-content-between align-items-center px-3">
+        <!-- Kiri: Logo + Nama Aplikasi + Deskripsi -->
+        <div class="d-flex align-items-center">
+          <img src="./images/logo-32.png" alt="Logo Aplikasi" width="32" height="32" class="me-2" />
+          <div class="d-flex flex-column justify-content-center lh-sm">
+            <span class="fw-semibold" style="font-size: 0.95rem">IE-Chart</span>
+            <small class="text-muted" style="font-size: 0.75rem"
+              >Automatic Chart Generator Extension</small
+            >
+          </div>
+        </div>
+
+        <!-- Kanan: Nama Perusahaan -->
+        <div class="d-flex align-items-center">
+          <small class="text-muted" style="font-size: 0.85rem"
+            >PELAKSANAAN JALAN NASIONAL WILAYAH III PROVINSI JAWA BARAT</small
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Konten utama -->
+    <div id="content" class="d-none"></div>
+
+    <footer class="bg-light text-center py-3 mt-auto">
+      <small>
+        Developed by
+        <span class="text-muted" style="font-size: 0.75rem"
+          ><br />
+          Satuan Kerja Pelaksanaan Jalan Nasional Wilayah III Provinsi Jawa Barat
+        </span>
+      </small>
+    </footer>
+
+    <script src="js/chart.js"></script>
+    <script src="js/page.js"></script>
+  </body>
+</html>

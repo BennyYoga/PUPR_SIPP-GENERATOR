@@ -1,0 +1,65 @@
+body {
+  width: 500px;
+  background: linear-gradient(145deg, #e3f2fd, #fefefe);
+  padding: 20px 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #343a40;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.logo {
+  height: 25px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+  text-align: center;
+}
+.app-name {
+  font-size: 0.8rem; /* Menurunkan ukuran font */
+  font-weight: 700;
+  color: #0d6efd;
+  letter-spacing: 0.03em;
+}
+.description {
+  font-size: 0.7rem;
+  color: #6c757d;
+  font-style: italic;
+}
+.footer {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #6c757d;
+}
+
+.card {
+  margin-top: -10px;
+}
+.table {
+  width: 100%; /* Tabel mengambil 100% lebar kontainer */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-spacing: 0; /* Menghilangkan jarak antar sel */
+}
+.table th,
+.table td {
+  text-align: center; /* Menjaga teks tetap terpusat */
+  padding: 4px; /* Mengurangi padding lebih lanjut */
+  border: 1px solid #ddd;
+  font-size: 0.85rem; /* Ukuran font lebih kecil */
+  line-height: 1.2; /* Mengurangi tinggi baris */
+}
+.table th {
+  background-color: #0d6efd;
+  color: white;
+  font-weight: bold;
+}
+.table tbody tr {
+  transition: background-color 0.3s ease;
+}
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+.btn-table {
+  padding: 2px 8px; /* Padding lebih kecil */
+  font-size: 0.75rem; /* Ukuran font lebih kecil */
+}
