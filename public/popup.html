@@ -21,58 +21,79 @@
       </div>
     </div>
 
-    <!-- Data Panel -->
-    <div class="table-container">
-      <table class="table table-striped table-bordered">
-        <thead class="table-light">
-          <tr>
-            <th scope="col">Data</th>
-            <th scope="col">Data Diambil</th>
-            <th scope="col">Status</th>
-            <th scope="col">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Rencana Keuangan</td>
-            <td id="waktuKeuangan">-</td>
-            <td id="statusKeuangan">Belum Diambil</td>
-            <td>
-              <button id="rencanaKeuangan" class="btn btn-success btn-sm btn-table">Ambil</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Rencana Fisik</td>
-            <td id="waktuFisik">-</td>
-            <td id="statusFisik">Belum Diambil</td>
-            <td>
-              <button id="rencanaFisik" class="btn btn-success btn-sm btn-table">Ambil</button>
-            </td>
-          </tr>
-          <tr>
-            <td>SIPP</td>
-            <td id="waktuSIPP">-</td>
-            <td id="statusSIPP">Belum Diambil</td>
-            <td>
-              <button id="SIPP" class="btn btn-success btn-sm btn-table">Ambil</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Progress Satker</td>
-            <td id="waktuSatker">-</td>
-            <td id="statusSatker">Belum Diambil</td>
-            <td>
-              <button id="satker" class="btn btn-success btn-sm btn-table">Ambil</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="notLoggedIn container mt-3" style="max-width: 400px">
+      <h5 class="mb-3 text-center">Masukkan Kode Authentifikasi</h5>
+      <form id="authForm">
+        <div class="mb-3">
+          <input
+            type="text"
+            id="authCode"
+            class="form-control"
+            placeholder="Kode Authentifikasi"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+        <div class="alert alert-danger" role="alert">
+          <p class="text-danger mt-3 text-center" style="display: none"></p>
+        </div>
+      </form>
     </div>
 
-    <!-- Main Content -->
-    <div class="mt-1">
-      <div class="d-flex flex-column gap-2">
-        <button id="excelPage" class="btn btn-success">Generate Excel</button>
+    <div class="loggedIn" style="display: none">
+      <!-- Data Panel -->
+      <div class="table-container">
+        <table class="table table-striped table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Data Diambil</th>
+              <th scope="col">Status</th>
+              <th scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rencana Keuangan</td>
+              <td id="waktuKeuangan">-</td>
+              <td id="statusKeuangan">Belum Diambil</td>
+              <td>
+                <button id="rencanaKeuangan" class="btn btn-success btn-sm btn-table">Ambil</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Rencana Fisik</td>
+              <td id="waktuFisik">-</td>
+              <td id="statusFisik">Belum Diambil</td>
+              <td>
+                <button id="rencanaFisik" class="btn btn-success btn-sm btn-table">Ambil</button>
+              </td>
+            </tr>
+            <tr>
+              <td>SIPP</td>
+              <td id="waktuSIPP">-</td>
+              <td id="statusSIPP">Belum Diambil</td>
+              <td>
+                <button id="SIPP" class="btn btn-success btn-sm btn-table">Ambil</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Progress Satker</td>
+              <td id="waktuSatker">-</td>
+              <td id="statusSatker">Belum Diambil</td>
+              <td>
+                <button id="satker" class="btn btn-success btn-sm btn-table">Ambil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Main Content -->
+      <div class="mt-1">
+        <div class="d-flex flex-column gap-2">
+          <button id="excelPage" class="btn btn-success">Generate Excel</button>
+        </div>
       </div>
     </div>
 
@@ -85,5 +106,6 @@
     <!-- <script src="js/xlsx.full.min.js"></script> -->
     <script src="js/exceljs.min.js"></script>
     <script src="js/popup.js"></script>
+    <script src="js/popup-auth.js" defer></script>
   </body>
 </html>
