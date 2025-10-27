@@ -124,21 +124,69 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
 
           const rows = table.querySelectorAll('tbody tr')
+          const resultSatker = []
           const resultA = []
           const resultB = []
           const resultC = []
           const resultD = []
 
+          const resultSimpenan = async () => {
+            return new Promise((resolve) => {
+              chrome.storage.local.get(['dataSimpenan'], (result) => {
+                if (result.dataSimpenan) {
+                  resolve(result.dataSimpenan)
+                } else {
+                  resolve([])
+                }
+              })
+            })
+          }
+
+          const dataResultSimpenan = await resultSimpenan()
+
           const getText = (el) => el?.innerText?.trim().replace(/\s+/g, ' ') || ''
+          const getNumber = (el) => {
+            if (!el?.innerText) return 0
+            // Ambil teks, hapus spasi & titik, lalu ubah ke number
+            const text = el.innerText.trim().replace(/\./g, '').replace(/\s+/g, '')
+            const num = Number(text)
+            return isNaN(num) ? 0 : num
+          }
 
           for (const row of rows) {
+            let itemDitemukan = null
             const bgColor = row.getAttribute('bgColor') || ''
             const cells = row.querySelectorAll('td')
             const jenis = getText(cells[7])
 
-            if (jenis === 'Swakelola' && (bgColor === '' || bgColor === '#FFFFFF')) {
-              const nama = getText(cells[2])
-              const kode = getText(cells[1])
+            //Pengaturan Jika Namanya ada di dataResultSimpenan maka dikalkulasi Pagunya
+            const nama = getText(cells[2])
+            const pagu = getNumber(cells[9])
+            const blokir = getNumber(cells[11])
+            const kode = getText(cells[1])
+
+            function hapusTandaKurung(nama) {
+              return nama
+                .replace(/\(\s*(.*?)\s*\)/g, '$1')
+                .replace(/\s+/g, ' ')
+                .trim()
+            }
+            itemDitemukan = dataResultSimpenan.find(
+              (item) => hapusTandaKurung(item.nama) === hapusTandaKurung(nama),
+            )
+
+            if (itemDitemukan) {
+              let hasilKalkulasi = pagu - blokir
+              itemDitemukan.hasil_effisiensi =
+                (itemDitemukan.hasil_effisiensi == null ? 0 : itemDitemukan.hasil_effisiensi) +
+                hasilKalkulasi
+              itemDitemukan.pagu += pagu
+            }
+
+            if (
+              (jenis === 'Swakelola' || jenis === 'AU') &&
+              (bgColor === '' || bgColor === '#FFFFFF')
+            ) {
               const vol = getText(cells[3])
               const satuan = getText(cells[4])
               const realisasi_fisik = parseToFloat(getText(cells[14]))
@@ -158,8 +206,10 @@ document.addEventListener('DOMContentLoaded', async function () {
               })})`
 
               if (kodeParts.length === 5) {
-                const firstDigit = kodeParts[4][0]
-                const resultArray =
+                const firstDigit = kodeParts[4].charAt(0)
+                const secondDigit = kodeParts[4].charAt(1) ?? null
+                let resultArray = null
+                resultArray =
                   firstDigit === 'A'
                     ? resultA
                     : firstDigit === 'B'
@@ -172,11 +222,70 @@ document.addEventListener('DOMContentLoaded', async function () {
                             ? resultB
                             : null
 
+                if (firstDigit === 'H' && secondDigit) {
+                  if (secondDigit == 'A') {
+                    resultArray = resultA
+                  }
+                  if (secondDigit == 'B' || secondDigit == 'H') {
+                    resultArray = resultB
+                  }
+                  if (secondDigit == 'C' || secondDigit == 'I') {
+                    resultArray = resultC
+                  }
+                  if (secondDigit == 'D' || secondDigit == 'J') {
+                    resultArray = resultD
+                  }
+                  if (
+                    secondDigit == 'E' ||
+                    secondDigit == 'F' ||
+                    secondDigit == 'K' ||
+                    secondDigit == 'L'
+                  ) {
+                    resultArray = resultSatker
+                  }
+                  if (secondDigit == 'G') {
+                    if (kodeParts[3] == '402') {
+                      resultArray = resultA
+                    } else if (kodeParts[3] == '401') {
+                      resultArray = resultSatker
+                    }
+                  }
+                }
+
+                if (firstDigit === 'E' && secondDigit) {
+                  if (secondDigit === 'A') {
+                    resultArray = resultA
+                  } else if (secondDigit === 'B') {
+                    resultArray = resultB
+                  } else if (secondDigit === 'C') {
+                    resultArray = resultC
+                  } else if (secondDigit === 'D') {
+                    resultArray = resultD
+                  } else if (
+                    secondDigit === 'I' ||
+                    secondDigit === 'F' ||
+                    secondDigit === 'G' ||
+                    secondDigit === 'H'
+                  ) {
+                    resultArray = resultSatker
+                  }
+                }
+
+                if (firstDigit == 'F' && secondDigit) {
+                  if (secondDigit == 'A') resultArray = resultA
+                  if (secondDigit == 'B') resultArray = resultB
+                  if (secondDigit == 'C') resultArray = resultC
+                  if (secondDigit == 'D') resultArray = resultD
+                  if (secondDigit == 'E' || secondDigit == 'F') resultArray = resultSatker
+                }
+                hasil_effisiensi = pagu - (blokir || 0)
                 if (resultArray) {
                   resultArray.push({
                     kode,
                     nama,
                     vol,
+                    pagu,
+                    hasil_effisiensi,
                     satuan,
                     rencana_keuangan,
                     realisasi_keuangan,
@@ -190,8 +299,8 @@ document.addEventListener('DOMContentLoaded', async function () {
               }
             }
           }
-
-          const result = { resultA, resultB, resultC, resultD }
+          chrome.storage.local.set({ dataSimpenan: dataResultSimpenan })
+          const result = { resultSatker, resultA, resultB, resultC, resultD }
           const waktu = new Date().toLocaleString('id-ID', {
             timeZone: 'Asia/Jakarta',
             day: 'numeric',
@@ -204,6 +313,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           return {
             waktu: waktu,
             result: result,
+            resultSimpenan: dataResultSimpenan,
           }
         },
       },
@@ -229,6 +339,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     )
   })
 
+  // SIPP GENERATE ===============================================================================================
   SIPPBtn.addEventListener('click', async function () {
     SIPPBtn.textContent = 'Loading...'
     SIPPBtn.disabled = true
@@ -250,6 +361,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           const resultB = []
           const resultC = []
           const resultD = []
+          const resultSimpenan = []
 
           const toFloatWithTwoDecimals = (str) => {
             if (str == ' ' || str == '') return str
@@ -260,6 +372,12 @@ document.addEventListener('DOMContentLoaded', async function () {
           rows.forEach((row) => {
             const bgColor = row.getAttribute('bgcolor')?.toUpperCase() || ''
             const getText = (index) => row.querySelectorAll('td')[index]?.innerText.trim() || ''
+            const getNumber = (el) => {
+              if (!el?.innerText) return 0
+              const text = el.innerText.trim().replace(/\./g, '').replace(/\s+/g, '')
+              const num = Number(text)
+              return isNaN(num) ? 0 : num
+            }
 
             if (bgColor == '#FFFFF' || bgColor == '') {
               const kode = getText(5)
@@ -300,11 +418,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                             : null
 
                 if (resultArray) {
+                  resultSimpenan.push({
+                    nama: nama,
+                    kode: kode,
+                    pagu: null,
+                    hasil_effisiensi: null,
+                    kode_result: firstDigit == 'E' ? 'B' : firstDigit,
+                  })
                   resultArray.push({
                     kode: kode,
                     nama: nama,
                     vol: vol,
                     satuan: satuan,
+                    pagu: null,
+                    hasil_effisiensi: null,
                     rencana_keuangan: parseFloat(rencana_keuangan),
                     realisasi_keuangan: parseFloat(realisasi_keuangan),
                     deviasi_keuangan: parseFloat(deviasi_keuangan),
@@ -328,10 +455,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                           : null
 
                 if (resultArrat) {
+                  //Menyimpan Result
+                  resultSimpenan.push({
+                    nama: nama,
+                    kode: kode,
+                    pagu: null,
+                    hasil_effisiensi: null,
+                    kode_result: wilayah,
+                  })
+                  hasil_effisiensi = null
+                  pagu = null
                   resultArrat.push({
                     kode,
                     nama,
-                    vol,
+                    pagu,
+                    hasil_effisiensi,
                     satuan,
                     rencana_keuangan,
                     realisasi_keuangan,
@@ -345,7 +483,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               }
             }
           })
-
+          chrome.storage.local.set({ dataSimpenan: resultSimpenan })
           const result = { resultA, resultB, resultC, resultD }
           const waktu = new Date().toLocaleString('id-ID', {
             timeZone: 'Asia/Jakarta',

@@ -5,7 +5,51 @@ document.addEventListener('DOMContentLoaded', async function () {
     const dataSIPP = await getFromStorage('dataSIPP')
     const dataEmon = await getFromStorage('dataEmon')
 
+    const ambilDataSimpenan = async () => {
+      return new Promise((resolve) => {
+        chrome.storage.local.get(['dataSimpenan'], (result) => {
+          resolve(result.dataSimpenan)
+        })
+      })
+    }
+    const dataSimpenan = await ambilDataSimpenan()
+    dataSimpenan.forEach((item) => {
+      if (item.kode_result == 'A') {
+        let itemDitemukan = dataSIPP.resultA.find((data) => data.kode == item.kode)
+        if (itemDitemukan) {
+          itemDitemukan.hasil_effisiensi =
+            (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
+          itemDitemukan.pagu = item.pagu
+        }
+      }
+      if (item.kode_result == 'B') {
+        let itemDitemukan = dataSIPP.resultB.find((data) => data.kode == item.kode)
+        if (itemDitemukan) {
+          itemDitemukan.hasil_effisiensi =
+            (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
+          itemDitemukan.pagu = item.pagu
+        }
+      }
+      if (item.kode_result == 'C') {
+        let itemDitemukan = dataSIPP.resultC.find((data) => data.kode == item.kode)
+        if (itemDitemukan) {
+          itemDitemukan.hasil_effisiensi =
+            (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
+          itemDitemukan.pagu = item.pagu
+        }
+      }
+      if (item.kode_result == 'D') {
+        let itemDitemukan = dataSIPP.resultD.find((data) => data.kode == item.kode)
+        if (itemDitemukan) {
+          itemDitemukan.hasil_effisiensi =
+            (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
+          itemDitemukan.pagu = item.pagu
+        }
+      }
+    })
+
     const rekapTotal = {
+      resultSatker: [...dataEmon.resultSatker],
       resultA: [...dataSIPP.resultA, ...dataEmon.resultA],
       resultB: [...dataSIPP.resultB, ...dataEmon.resultB],
       resultC: [...dataSIPP.resultC, ...dataEmon.resultC],
@@ -38,8 +82,8 @@ async function generateExcel2(data) {
   const row1 = ws.addRow(['LAPORAN PROGRESS PEKERJAAN'])
   const row2 = ws.addRow(['SATKER PJN WILAYAH III PROV.JABAR'])
 
-  ws.mergeCells('A1:J1')
-  ws.mergeCells('A2:J2')
+  ws.mergeCells('A1:L1')
+  ws.mergeCells('A2:L2')
 
   const cell1 = row1.getCell(1)
   const cell2 = row2.getCell(1)
@@ -67,6 +111,8 @@ async function generateExcel2(data) {
   const headers1 = [
     'No',
     'Paket',
+    'Pagu Dipa (Rp Ribu)',
+    'Pagu Setelah Effisiensi (Rp Ribu)',
     'Progress Fisik',
     '',
     '',
@@ -77,6 +123,8 @@ async function generateExcel2(data) {
     'Keterangan',
   ]
   const headers2 = [
+    '',
+    '',
     '',
     '',
     'Rencana',
@@ -115,7 +163,7 @@ async function generateExcel2(data) {
   const addGroupToSheet = (groupName, groupData) => {
     if (groupData.length > 0) {
       const groupRow = ws.addRow([groupName + ':'])
-      ws.mergeCells(`A${ws.lastRow.number}:J${ws.lastRow.number}`)
+      ws.mergeCells(`A${ws.lastRow.number}:L${ws.lastRow.number}`)
 
       groupRow.getCell(1).style = {
         font: { bold: true },
@@ -130,20 +178,28 @@ async function generateExcel2(data) {
         if (realisasi === '' || rencana === '' || isNaN(realisasi) || isNaN(rencana)) {
           return ' '
         } else {
-          return parseFloat(realisasi - rencana)
+          return parseFloat(realisasi - rencana).toFixed(2)
         }
       }
 
+      let totalPagu = 0
+      let totalPaguEffisiensi = 0
+
       groupData.forEach((item, index) => {
+        totalPagu += item.pagu
+        totalPaguEffisiensi += item.hasil_effisiensi
+
         const row = ws.addRow([
           index + 1,
           item.nama,
-          item.rencana_fisik,
-          item.realisasi_fisik,
+          item.pagu.toLocaleString('id-ID'),
+          item.hasil_effisiensi.toLocaleString('id-ID'),
+          parseFloat(item.rencana_fisik).toFixed(2),
+          parseFloat(item.realisasi_fisik).toFixed(2),
           calculasiDevisiasi(item.realisasi_fisik, item.rencana_fisik),
           // item.deviasi_fisik,
-          item.rencana_keuangan,
-          item.realisasi_keuangan,
+          parseFloat(item.rencana_keuangan).toFixed(2),
+          parseFloat(item.realisasi_keuangan).toFixed(2),
           calculasiDevisiasi(item.realisasi_keuangan, item.rencana_keuangan),
           // item.deviasi_keuangan,
           calculasiDevisiasi(item.realisasi_fisik, item.realisasi_keuangan),
@@ -166,9 +222,11 @@ async function generateExcel2(data) {
         row.getCell(7).style = { alignment: { horizontal: 'center', vertical: 'middle' } }
         row.getCell(8).style = { alignment: { horizontal: 'center', vertical: 'middle' } }
         row.getCell(9).style = { alignment: { horizontal: 'center', vertical: 'middle' } }
+        row.getCell(10).style = { alignment: { horizontal: 'center', vertical: 'middle' } }
+        row.getCell(11).style = { alignment: { horizontal: 'center', vertical: 'middle' } }
 
-        row.getCell(10).style = { alignment: { wrapText: true } }
-        const keteranganCell = row.getCell(10)
+        row.getCell(12).style = { alignment: { wrapText: true } }
+        const keteranganCell = row.getCell(12)
         keteranganCell.height = undefined
 
         if (
@@ -181,8 +239,8 @@ async function generateExcel2(data) {
             Number(item.rencana_fisik) === 0 &&
             Number(item.rencana_keuangan) === 0)
         ) {
-          for (let col = 3; col <= 10; col++) {
-            if (col != 10) row.getCell(col).value = ''
+          for (let col = 5; col <= 12; col++) {
+            if (col != 12) row.getCell(col).value = ''
             row.getCell(col).style = {
               fill: {
                 type: 'pattern',
@@ -194,9 +252,9 @@ async function generateExcel2(data) {
           }
         }
 
-        const deviasiFisikCell = row.getCell(5)
-        const deviasiKeuanganCell = row.getCell(8)
-        const DFK = row.getCell(9)
+        const deviasiFisikCell = row.getCell(7)
+        const deviasiKeuanganCell = row.getCell(10)
+        const DFK = row.getCell(11)
 
         if (calculasiDevisiasi(item.realisasi_fisik, item.rencana_fisik) < 0) {
           deviasiFisikCell.style.font = { color: { argb: 'FFFF0000' } }
@@ -208,7 +266,7 @@ async function generateExcel2(data) {
           DFK.style.font = { color: { argb: 'FFFF0000' } }
         }
 
-        for (let col = 1; col <= 10; col++) {
+        for (let col = 1; col <= 12; col++) {
           row.getCell(col).style.border = {
             top: { style: 'thin', color: { argb: 'FF000000' } },
             left: { style: 'thin', color: { argb: 'FF000000' } },
@@ -217,39 +275,85 @@ async function generateExcel2(data) {
           }
         }
       })
+      // Tambahkan baris kosong
+      ws.addRow([])
+
+      // Dapatkan nomor baris yang baru saja ditambahkan
+      const rowNumber = ws.lastRow.number
+
+      // Merge kolom A dan B, lalu isi "Total:"
+      ws.mergeCells(`A${rowNumber}:B${rowNumber}`)
+      ws.getCell(`A${rowNumber}`).value = 'Total:'
+      ws.getCell(`A${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      // Isi kolom C dan D
+      ws.getCell(`D${rowNumber}`).value = totalPaguEffisiensi.toLocaleString('id-ID')
+      ws.getCell(`D${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      ws.getCell(`C${rowNumber}`).value = totalPagu.toLocaleString('id-ID')
+      ws.getCell(`C${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      // Merge kolom E sampai L
+      ws.mergeCells(`E${rowNumber}:L${rowNumber}`)
+      const mergedEK = ws.getCell(`E${rowNumber}`)
+      mergedEK.value = '' // Optional
+      mergedEK.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'D9D9D9' }, // Warna abu-abu
+      }
+      mergedEK.alignment = { vertical: 'middle', horizontal: 'center' }
+
+      // Tambahkan border untuk seluruh kolom A sampai L di baris tersebut
+      for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']) {
+        const cell = ws.getCell(`${col}${rowNumber}`)
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        }
+      }
     }
   }
 
   // Add each result group to the sheet
-  addGroupToSheet('PPK 3.1 : Clara AG Simatupang, ST, M.T', data.resultA)
-  addGroupToSheet('PPK 3.2 : Arianto, ST, M.T', data.resultB)
-  addGroupToSheet('PPK 3.3 : Agung Wihartanto, ST.,MT', data.resultC)
-  addGroupToSheet('PPK 3.4 : Rico Octriyana, ST, M.T', data.resultD)
+  addGroupToSheet('Satker PJN III PROV JABAR : Indra Gunawan, S.T, M.Eng', data.resultSatker)
+  addGroupToSheet('PPK 3.1 : Clara AG Simatupang, S.T, M.T', data.resultA)
+  addGroupToSheet('PPK 3.2 : Arianto, S.T, M.T', data.resultB)
+  addGroupToSheet('PPK 3.3 : Agung Wihartanto, S.T.,MT', data.resultC)
+  addGroupToSheet('PPK 3.4 : Rico Octriyana, S.T, M.T', data.resultD)
 
   // Merging cells
-  ws.mergeCells('A4:I4') // Merge kolom 'No'
+  ws.mergeCells('A4:I4')
   ws.mergeCells('A5:A6') // Merge kolom 'No'
   ws.mergeCells('B5:B6') // Merge kolom 'Paket'
-  ws.mergeCells('I5:I6') // Merge kolom 'DFK'
-  ws.mergeCells('J5:J6') // Merge kolom 'Keterangan'
-  ws.mergeCells('C5:E5') // Merge untuk 'Progress Fisik'
-  ws.mergeCells('F5:H5') // Merge untuk 'Progress Keuangan'
+  ws.mergeCells('C5:C6') // Merge kolom 'Paket'
+  ws.mergeCells('D5:D6') // Merge kolom 'Paket'
+  ws.mergeCells('K5:K6') // Merge kolom 'DFK'
+  ws.mergeCells('L5:L6') // Merge kolom 'Keterangan'
+  ws.mergeCells('E5:G5') // Merge untuk 'Progress Fisik'
+  ws.mergeCells('H5:J5') // Merge untuk 'Progress Keuangan'
 
   // Set column widths
   ws.getColumn(1).width = 5 // No
   ws.getColumn(2).width = 80 // Paket
-  ws.getColumn(3).width = 10 // Rencana Fisik
-  ws.getColumn(4).width = 10 // Realisasi Fisik
-  ws.getColumn(5).width = 10 // Deviasi Fisik
-  ws.getColumn(6).width = 10 // Rencana Keuangan
-  ws.getColumn(7).width = 10 // Realisasi Keuangan
-  ws.getColumn(8).width = 10 // Deviasi Keuangan
-  ws.getColumn(9).width = 10 // Keterangan
-  ws.getColumn(10).width = 60 // Keterangan
+
+  ws.getColumn(3).width = 25 // Pagu Effisiensi
+  ws.getColumn(4).width = 25 // Pagu Effisiensi
+
+  ws.getColumn(5).width = 10 // Rencana Fisik
+  ws.getColumn(6).width = 10 // Realisasi Fisik
+  ws.getColumn(7).width = 10 // Deviasi Fisik
+  ws.getColumn(8).width = 10 // Rencana Keuangan
+  ws.getColumn(9).width = 10 // Realisasi Keuangan
+  ws.getColumn(10).width = 10 // Deviasi Keuangan
+  ws.getColumn(11).width = 10 // Keterangan
+  ws.getColumn(12).width = 60 // Keterangan
 
   // Wrap Teks Keterangan & Paket
   ws.getColumn(2).alignment = { wrapText: true }
-  ws.getColumn(10).alignment = { wrapText: true }
+  ws.getColumn(12).alignment = { wrapText: true }
 
   ws.getCell('A5').style.alignment = { horizontal: 'center', vertical: 'middle' }
   ws.getCell('B5').style.alignment = { horizontal: 'center', vertical: 'middle' }
@@ -261,7 +365,12 @@ async function generateExcel2(data) {
   ws.getCell('H5').style.alignment = { horizontal: 'center', vertical: 'middle' }
   ws.getCell('I5').style.alignment = { horizontal: 'center', vertical: 'middle' }
   ws.getCell('J5').style.alignment = { horizontal: 'center', vertical: 'middle' }
-
+  ws.getCell('K5').style.alignment = { horizontal: 'center', vertical: 'middle' }
+  ws.getCell('L5').style.alignment = { horizontal: 'center', vertical: 'middle' }
+  ws.getCell('C5').alignment = {
+    ...headerStyle.alignment,
+    wrapText: true,
+  }
   //berikan border untuk semua
 
   // Save the workbook to file
