@@ -20,6 +20,28 @@ document.addEventListener('DOMContentLoaded', async function () {
           itemDitemukan.hasil_effisiensi =
             (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
           itemDitemukan.pagu = item.pagu
+          if (item.array_pagu.length >= 1) {
+            let hasilSimpenanKalkulasiRencanaFisik = 0
+            let hasilSimpenanKalkulasiRealisasiFisik = 0
+            let hasilSimpenanKalkulasiRencanaKeuangan = 0
+            let hasilSimpenanKalkulasiRealisasiKeuangan = 0
+            for (let i = 0; i < item.array_pagu.length; i++) {
+              hasilSimpenanKalkulasiRencanaFisik +=
+                (item.array_pagu[i] * item.array_rencana_fisik[i]) / 100
+              hasilSimpenanKalkulasiRealisasiFisik +=
+                (item.array_pagu[i] * item.array_realisasi_fisik[i]) / 100
+              hasilSimpenanKalkulasiRencanaKeuangan +=
+                (item.array_pagu[i] * item.array_rencana_keuangan[i]) / 100
+              hasilSimpenanKalkulasiRealisasiKeuangan +=
+                (item.array_pagu[i] * item.array_realisasi_keuangan[i]) / 100
+            }
+            itemDitemukan.rencana_fisik = (hasilSimpenanKalkulasiRencanaFisik / item.pagu) * 100
+            itemDitemukan.realisasi_fisik = (hasilSimpenanKalkulasiRealisasiFisik / item.pagu) * 100
+            itemDitemukan.rencana_keuangan =
+              (hasilSimpenanKalkulasiRencanaKeuangan / item.pagu) * 100
+            itemDitemukan.realisasi_keuangan =
+              (hasilSimpenanKalkulasiRealisasiKeuangan / item.pagu) * 100
+          }
         }
       }
       if (item.kode_result == 'B') {
@@ -28,6 +50,28 @@ document.addEventListener('DOMContentLoaded', async function () {
           itemDitemukan.hasil_effisiensi =
             (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
           itemDitemukan.pagu = item.pagu
+          if (item.array_pagu.length >= 1) {
+            let hasilSimpenanKalkulasiRencanaFisik = 0
+            let hasilSimpenanKalkulasiRealisasiFisik = 0
+            let hasilSimpenanKalkulasiRencanaKeuangan = 0
+            let hasilSimpenanKalkulasiRealisasiKeuangan = 0
+            for (let i = 0; i < item.array_pagu.length; i++) {
+              hasilSimpenanKalkulasiRencanaFisik +=
+                (item.array_pagu[i] * item.array_rencana_fisik[i]) / 100
+              hasilSimpenanKalkulasiRealisasiFisik +=
+                (item.array_pagu[i] * item.array_realisasi_fisik[i]) / 100
+              hasilSimpenanKalkulasiRencanaKeuangan +=
+                (item.array_pagu[i] * item.array_rencana_keuangan[i]) / 100
+              hasilSimpenanKalkulasiRealisasiKeuangan +=
+                (item.array_pagu[i] * item.array_realisasi_keuangan[i]) / 100
+            }
+            itemDitemukan.rencana_fisik = (hasilSimpenanKalkulasiRencanaFisik / item.pagu) * 100
+            itemDitemukan.realisasi_fisik = (hasilSimpenanKalkulasiRealisasiFisik / item.pagu) * 100
+            itemDitemukan.rencana_keuangan =
+              (hasilSimpenanKalkulasiRencanaKeuangan / item.pagu) * 100
+            itemDitemukan.realisasi_keuangan =
+              (hasilSimpenanKalkulasiRealisasiKeuangan / item.pagu) * 100
+          }
         }
       }
       if (item.kode_result == 'C') {
@@ -36,6 +80,28 @@ document.addEventListener('DOMContentLoaded', async function () {
           itemDitemukan.hasil_effisiensi =
             (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
           itemDitemukan.pagu = item.pagu
+          if (item.array_pagu.length >= 1) {
+            let hasilSimpenanKalkulasiRencanaFisik = 0
+            let hasilSimpenanKalkulasiRealisasiFisik = 0
+            let hasilSimpenanKalkulasiRencanaKeuangan = 0
+            let hasilSimpenanKalkulasiRealisasiKeuangan = 0
+            for (let i = 0; i < item.array_pagu.length; i++) {
+              hasilSimpenanKalkulasiRencanaFisik +=
+                (item.array_pagu[i] * item.array_rencana_fisik[i]) / 100
+              hasilSimpenanKalkulasiRealisasiFisik +=
+                (item.array_pagu[i] * item.array_realisasi_fisik[i]) / 100
+              hasilSimpenanKalkulasiRencanaKeuangan +=
+                (item.array_pagu[i] * item.array_rencana_keuangan[i]) / 100
+              hasilSimpenanKalkulasiRealisasiKeuangan +=
+                (item.array_pagu[i] * item.array_realisasi_keuangan[i]) / 100
+            }
+            itemDitemukan.rencana_fisik = (hasilSimpenanKalkulasiRencanaFisik / item.pagu) * 100
+            itemDitemukan.realisasi_fisik = (hasilSimpenanKalkulasiRealisasiFisik / item.pagu) * 100
+            itemDitemukan.rencana_keuangan =
+              (hasilSimpenanKalkulasiRencanaKeuangan / item.pagu) * 100
+            itemDitemukan.realisasi_keuangan =
+              (hasilSimpenanKalkulasiRealisasiKeuangan / item.pagu) * 100
+          }
         }
       }
       if (item.kode_result == 'D') {
@@ -44,6 +110,28 @@ document.addEventListener('DOMContentLoaded', async function () {
           itemDitemukan.hasil_effisiensi =
             (itemDitemukan.hasil_effisiensi || 0) + (item.hasil_effisiensi || 0)
           itemDitemukan.pagu = item.pagu
+          if (item.array_pagu.length >= 1) {
+            let hasilSimpenanKalkulasiRencanaFisik = 0
+            let hasilSimpenanKalkulasiRealisasiFisik = 0
+            let hasilSimpenanKalkulasiRencanaKeuangan = 0
+            let hasilSimpenanKalkulasiRealisasiKeuangan = 0
+            for (let i = 0; i < item.array_pagu.length; i++) {
+              hasilSimpenanKalkulasiRencanaFisik +=
+                (item.array_pagu[i] * item.array_rencana_fisik[i]) / 100
+              hasilSimpenanKalkulasiRealisasiFisik +=
+                (item.array_pagu[i] * item.array_realisasi_fisik[i]) / 100
+              hasilSimpenanKalkulasiRencanaKeuangan +=
+                (item.array_pagu[i] * item.array_rencana_keuangan[i]) / 100
+              hasilSimpenanKalkulasiRealisasiKeuangan +=
+                (item.array_pagu[i] * item.array_realisasi_keuangan[i]) / 100
+            }
+            itemDitemukan.rencana_fisik = (hasilSimpenanKalkulasiRencanaFisik / item.pagu) * 100
+            itemDitemukan.realisasi_fisik = (hasilSimpenanKalkulasiRealisasiFisik / item.pagu) * 100
+            itemDitemukan.rencana_keuangan =
+              (hasilSimpenanKalkulasiRencanaKeuangan / item.pagu) * 100
+            itemDitemukan.realisasi_keuangan =
+              (hasilSimpenanKalkulasiRealisasiKeuangan / item.pagu) * 100
+          }
         }
       }
     })
@@ -160,6 +248,9 @@ async function generateExcel2(data) {
     cell.style = headerStyle
   })
 
+  let TotalPaguKeseluruhan = null
+  let TotalPaguEfisiensiKeseluruhan = null
+
   const addGroupToSheet = (groupName, groupData) => {
     if (groupData.length > 0) {
       const groupRow = ws.addRow([groupName + ':'])
@@ -186,6 +277,9 @@ async function generateExcel2(data) {
       let totalPaguEffisiensi = 0
 
       groupData.forEach((item, index) => {
+        TotalPaguKeseluruhan += item.pagu
+        TotalPaguEfisiensiKeseluruhan += item.hasil_effisiensi
+
         totalPagu += item.pagu
         totalPaguEffisiensi += item.hasil_effisiensi
 
@@ -371,7 +465,44 @@ async function generateExcel2(data) {
     ...headerStyle.alignment,
     wrapText: true,
   }
-  //berikan border untuk semua
+  // 🔹 Kalkulasi total pagu keseluruhan dan pagu efisiensi keseluruhan
+  const akhiriBaris = ws.lastRow.number + 1
+  ws.mergeCells(`A${akhiriBaris}:B${akhiriBaris}`)
+
+  // Teks Total Keseluruhan
+  ws.getCell(`A${akhiriBaris}`).value = 'TOTAL KESELURUHAN:'
+  ws.getCell(`A${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws.getCell(`A${akhiriBaris}`).font = { bold: true, size: 14 }
+
+  // Total Pagu
+  ws.getCell(`C${akhiriBaris}`).value = TotalPaguKeseluruhan.toLocaleString('id-ID')
+  ws.getCell(`C${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws.getCell(`C${akhiriBaris}`).font = { bold: true, size: 14 }
+
+  // Total Efisiensi
+  ws.getCell(`D${akhiriBaris}`).value = TotalPaguEfisiensiKeseluruhan.toLocaleString('id-ID')
+  ws.getCell(`D${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws.getCell(`D${akhiriBaris}`).font = { bold: true, size: 14 }
+
+  // Merge kolom E–L dan beri warna latar
+  ws.mergeCells(`E${akhiriBaris}:L${akhiriBaris}`)
+  const mergedTotal = ws.getCell(`E${akhiriBaris}`)
+  mergedTotal.alignment = { vertical: 'middle', horizontal: 'center' }
+
+  // 🔹 Tambahkan border dan latar warna agar serasi
+  for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']) {
+    ws.getCell(`${col}${akhiriBaris}`).border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    }
+    ws.getCell(`${col}${akhiriBaris}`).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'D9D9D9' }, // Warna abu-abu
+    }
+  }
 
   // Save the workbook to file
   await wb.xlsx.writeBuffer().then((buffer) => {

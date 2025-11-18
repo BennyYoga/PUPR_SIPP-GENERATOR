@@ -172,15 +172,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .trim()
             }
             itemDitemukan = dataResultSimpenan.find(
-              (item) => hapusTandaKurung(item.nama) === hapusTandaKurung(nama),
+              (item) => hapusTandaKurung(item.nama) == hapusTandaKurung(nama),
             )
-
             if (itemDitemukan) {
+              const rencana_keuangan = parseToFloat(await findRencanaKeuanganBulanIni(kode))
+              const realisasi_keuangan = parseToFloat(getText(cells[13]))
+              const rencana_fisik = parseToFloat(await findRencanaFisikBulanIni(kode))
+              const realisasi_fisik = parseToFloat(getText(cells[14]))
+
               let hasilKalkulasi = pagu - blokir
               itemDitemukan.hasil_effisiensi =
                 (itemDitemukan.hasil_effisiensi == null ? 0 : itemDitemukan.hasil_effisiensi) +
                 hasilKalkulasi
               itemDitemukan.pagu += pagu
+              itemDitemukan.array_kode.push(kode)
+              itemDitemukan.array_rencana_keuangan.push(rencana_keuangan)
+              itemDitemukan.array_realisasi_keuangan.push(realisasi_keuangan)
+              itemDitemukan.array_rencana_fisik.push(rencana_fisik)
+              itemDitemukan.array_realisasi_fisik.push(realisasi_fisik)
+              itemDitemukan.array_pagu.push(pagu)
             }
 
             if (
@@ -239,7 +249,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     secondDigit == 'E' ||
                     secondDigit == 'F' ||
                     secondDigit == 'K' ||
-                    secondDigit == 'L'
+                    secondDigit == 'L' ||
+                    secondDigit == 'M'
                   ) {
                     resultArray = resultSatker
                   }
@@ -390,7 +401,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               const rencana_fisik = toFloatWithTwoDecimals(getText(27))
               const realisasi_fisik = toFloatWithTwoDecimals(getText(28))
               const deviasi_fisik = toFloatWithTwoDecimals(getText(39))
-              const keterangan = `${getText(44)} (SIPP : ${new Date().toLocaleString('id-ID', {
+              const keterangan = `${getText(44)} (Iemon : ${new Date().toLocaleString('id-ID', {
                 timeZone: 'Asia/Jakarta',
                 day: 'numeric',
                 month: 'long',
@@ -424,6 +435,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     pagu: null,
                     hasil_effisiensi: null,
                     kode_result: firstDigit == 'E' ? 'B' : firstDigit,
+                    array_kode: [],
+                    array_rencana_keuangan: [],
+                    array_realisasi_keuangan: [],
+                    array_rencana_fisik: [],
+                    array_realisasi_fisik: [],
+                    array_pagu: [],
                   })
                   resultArray.push({
                     kode: kode,
@@ -462,6 +479,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     pagu: null,
                     hasil_effisiensi: null,
                     kode_result: wilayah,
+                    array_kode: [],
+                    array_rencana_keuangan: [],
+                    array_realisasi_keuangan: [],
+                    array_rencana_fisik: [],
+                    array_realisasi_fisik: [],
+                    array_pagu: [],
                   })
                   hasil_effisiensi = null
                   pagu = null
