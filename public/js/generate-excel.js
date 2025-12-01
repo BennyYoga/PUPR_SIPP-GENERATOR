@@ -251,6 +251,21 @@ async function generateExcel2(data) {
   let TotalPaguKeseluruhan = null
   let TotalPaguEfisiensiKeseluruhan = null
 
+  //Start Tambahan untuk mengetahui total fisik dan keuangan keseluruhan
+  let tempTotalPaguKeseluruhan = []
+  let tempTotalPaguEfisiensiKeseluruhan = []
+  let tempTotalRencanaFisikKeseluruhan = []
+  let tempTotalRealisasiFisikKeseluruhan = []
+  let tempTotalRencanaKeuanganKeseluruhan = []
+  let tempTotalRealisasiKeuanganKeseluruhan = []
+
+  let tempTotalPerhitunganRencanaFisikKeseluruhanSummary = []
+  let tempTotalPerhitunganRealisasiFisikKeseluruhanSummary = []
+  let tempTotalPerhitunganRencanaKeuanganKeseluruhanSummary = []
+  let tempTotalPerhitunganRealisasiKeuanganKeseluruhanSummary = []
+
+  //End tambahan untuk mengetahui total fisik dan keuangan keseluruhan
+
   const addGroupToSheet = (groupName, groupData) => {
     if (groupData.length > 0) {
       const groupRow = ws.addRow([groupName + ':'])
@@ -276,6 +291,12 @@ async function generateExcel2(data) {
       let totalPagu = 0
       let totalPaguEffisiensi = 0
 
+      //tambahan untuk total fisik dan keuangan per group
+      let tempTotalRencanaFisik = 0
+      let tempTotalRealisasiFisik = 0
+      let tempTotalRencanaKeuangan = 0
+      let tempTotalRealisasiKeuangan = 0
+
       groupData.forEach((item, index) => {
         TotalPaguKeseluruhan += item.pagu
         TotalPaguEfisiensiKeseluruhan += item.hasil_effisiensi
@@ -291,14 +312,19 @@ async function generateExcel2(data) {
           parseFloat(item.rencana_fisik).toFixed(2),
           parseFloat(item.realisasi_fisik).toFixed(2),
           calculasiDevisiasi(item.realisasi_fisik, item.rencana_fisik),
-          // item.deviasi_fisik,
           parseFloat(item.rencana_keuangan).toFixed(2),
           parseFloat(item.realisasi_keuangan).toFixed(2),
           calculasiDevisiasi(item.realisasi_keuangan, item.rencana_keuangan),
-          // item.deviasi_keuangan,
           calculasiDevisiasi(item.realisasi_fisik, item.realisasi_keuangan),
           item.keterangan,
         ])
+
+        //Start Tambahan untuk total fisik dan keuangan per group
+        tempTotalRealisasiFisik += (item.hasil_effisiensi * item.realisasi_fisik) / 100
+        tempTotalRencanaFisik += (item.hasil_effisiensi * item.rencana_fisik) / 100
+        tempTotalRealisasiKeuangan += (item.hasil_effisiensi * item.realisasi_keuangan) / 100
+        tempTotalRencanaKeuangan += (item.hasil_effisiensi * item.rencana_keuangan) / 100
+        //End Tambahan untuk total fisik dan keuangan per group
 
         row.getCell(2).style = {
           alignment: { vertical: 'middle' },
@@ -388,15 +414,97 @@ async function generateExcel2(data) {
       ws.getCell(`C${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
 
       // Merge kolom E sampai L
-      ws.mergeCells(`E${rowNumber}:L${rowNumber}`)
-      const mergedEK = ws.getCell(`E${rowNumber}`)
-      mergedEK.value = '' // Optional
-      mergedEK.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'D9D9D9' }, // Warna abu-abu
+      // ws.mergeCells(`E${rowNumber}:L${rowNumber}`)
+      // const mergedEK = ws.getCell(`E${rowNumber}`)
+      // mergedEK.value = '' // Optional
+      // mergedEK.fill = {
+      //   type: 'pattern',
+      //   pattern: 'solid',
+      //   fgColor: { argb: 'D9D9D9' }, // Warna abu-abu
+      // }
+      // mergedEK.alignment = { vertical: 'middle', horizontal: 'center' }
+
+      //tambahan untuk total fisik dan keuangan per group
+      let TotalPerhitunganRencanaFisik = 0
+      let TotalPerhitunganRealisasiFisik = 0
+      let TotalPerhitunganRencanaKeuangan = 0
+      let TotalPerhitunganRealisasiKeuangan = 0
+
+      TotalPerhitunganRencanaFisik = (tempTotalRencanaFisik / totalPaguEffisiensi) * 100
+      TotalPerhitunganRealisasiFisik = (tempTotalRealisasiFisik / totalPaguEffisiensi) * 100
+      TotalPerhitunganRencanaKeuangan = (tempTotalRencanaKeuangan / totalPaguEffisiensi) * 100
+      TotalPerhitunganRealisasiKeuangan = (tempTotalRealisasiKeuangan / totalPaguEffisiensi) * 100
+
+      ws.getCell(`E${rowNumber}`).value = parseFloat(TotalPerhitunganRencanaFisik).toFixed(2)
+      ws.getCell(`E${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      ws.getCell(`F${rowNumber}`).value = parseFloat(TotalPerhitunganRealisasiFisik).toFixed(2)
+      ws.getCell(`F${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      //Hitung Deviasi Fisik
+      ws.getCell(`G${rowNumber}`).value = parseFloat(
+        TotalPerhitunganRealisasiFisik - TotalPerhitunganRencanaFisik,
+      ).toFixed(2)
+      ws.getCell(`G${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      ws.getCell(`H${rowNumber}`).value = parseFloat(TotalPerhitunganRencanaKeuangan).toFixed(2)
+      ws.getCell(`H${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      ws.getCell(`I${rowNumber}`).value = parseFloat(TotalPerhitunganRealisasiKeuangan).toFixed(2)
+      ws.getCell(`I${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      //Hitung Deviasi Keuangan
+      ws.getCell(`J${rowNumber}`).value = parseFloat(
+        TotalPerhitunganRealisasiKeuangan - TotalPerhitunganRencanaKeuangan,
+      ).toFixed(2)
+      ws.getCell(`J${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      //Hitung DFK
+      ws.getCell(`K${rowNumber}`).value = parseFloat(
+        TotalPerhitunganRealisasiFisik - TotalPerhitunganRealisasiKeuangan,
+      ).toFixed(2)
+      ws.getCell(`K${rowNumber}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+      //berikan warna abu dan bold pada total per group berikan warna merah jika deviasi minus
+      for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']) {
+        const cell = ws.getCell(`${col}${rowNumber}`)
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFEDEDED' }, // Warna abu-abu
+        }
+        if (col === 'G' || col === 'K') {
+          if (parseFloat(cell.value) < 0) {
+            cell.font = { bold: true }
+            cell.font = { color: { argb: 'FFFF0000' }, bold: true }
+          } else {
+            cell.font = { bold: true }
+          }
+        } else {
+          if (parseFloat(cell.value) < 0) {
+            cell.font = { bold: true }
+            cell.font = { color: { argb: 'FFFF0000' }, bold: true }
+          } else {
+            cell.font = { bold: true }
+          }
+        }
       }
-      mergedEK.alignment = { vertical: 'middle', horizontal: 'center' }
+
+      //masukkan ke dalam array keseluruhan
+      tempTotalPaguKeseluruhan.push(totalPagu)
+      tempTotalPaguEfisiensiKeseluruhan.push(totalPaguEffisiensi)
+      tempTotalRencanaFisikKeseluruhan.push(tempTotalRencanaFisik)
+      tempTotalRealisasiFisikKeseluruhan.push(tempTotalRealisasiFisik)
+      tempTotalRencanaKeuanganKeseluruhan.push(tempTotalRencanaKeuangan)
+      tempTotalRealisasiKeuanganKeseluruhan.push(tempTotalRealisasiKeuangan)
+
+      tempTotalPerhitunganRencanaFisikKeseluruhanSummary.push(TotalPerhitunganRencanaFisik)
+      tempTotalPerhitunganRealisasiFisikKeseluruhanSummary.push(TotalPerhitunganRealisasiFisik)
+      tempTotalPerhitunganRencanaKeuanganKeseluruhanSummary.push(TotalPerhitunganRencanaKeuangan)
+      tempTotalPerhitunganRealisasiKeuanganKeseluruhanSummary.push(
+        TotalPerhitunganRealisasiKeuangan,
+      )
+      //end tambahan untuk total fisik dan keuangan per group
 
       // Tambahkan border untuk seluruh kolom A sampai L di baris tersebut
       for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']) {
@@ -410,6 +518,8 @@ async function generateExcel2(data) {
       }
     }
   }
+
+  //end buat
 
   // Add each result group to the sheet
   addGroupToSheet('Satker PJN III PROV JABAR : Indra Gunawan, S.T, M.Eng', data.resultSatker)
@@ -484,25 +594,341 @@ async function generateExcel2(data) {
   ws.getCell(`D${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
   ws.getCell(`D${akhiriBaris}`).font = { bold: true, size: 14 }
 
-  // Merge kolom E–L dan beri warna latar
-  ws.mergeCells(`E${akhiriBaris}:L${akhiriBaris}`)
-  const mergedTotal = ws.getCell(`E${akhiriBaris}`)
-  mergedTotal.alignment = { vertical: 'middle', horizontal: 'center' }
+  //Start Tambahan untuk total fisik dan keuangan keseluruhan
+  let TotalPerhitunganRencanaFisikKeseluruhan = 0
+  let TotalPerhitunganRealisasiFisikKeseluruhan = 0
+  let TotalPerhitunganRencanaKeuanganKeseluruhan = 0
+  let TotalPerhitunganRealisasiKeuanganKeseluruhan = 0
+
+  TotalPerhitunganRencanaFisikKeseluruhan =
+    (tempTotalRencanaFisikKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+  TotalPerhitunganRealisasiFisikKeseluruhan =
+    (tempTotalRealisasiFisikKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+  TotalPerhitunganRencanaKeuanganKeseluruhan =
+    (tempTotalRencanaKeuanganKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+  TotalPerhitunganRealisasiKeuanganKeseluruhan =
+    (tempTotalRealisasiKeuanganKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+
+  //Bagian Fisik
+  ws.getCell(`E${akhiriBaris}`).value = parseFloat(TotalPerhitunganRencanaFisikKeseluruhan).toFixed(
+    2,
+  )
+  ws.getCell(`E${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  ws.getCell(`F${akhiriBaris}`).value = parseFloat(
+    TotalPerhitunganRealisasiFisikKeseluruhan,
+  ).toFixed(2)
+  ws.getCell(`F${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  //Hitung Deviasi Fisik
+  ws.getCell(`G${akhiriBaris}`).value = parseFloat(
+    TotalPerhitunganRealisasiFisikKeseluruhan - TotalPerhitunganRencanaFisikKeseluruhan,
+  ).toFixed(2)
+  ws.getCell(`G${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  // bagian keunagan
+  ws.getCell(`H${akhiriBaris}`).value = parseFloat(
+    TotalPerhitunganRencanaKeuanganKeseluruhan,
+  ).toFixed(2)
+  ws.getCell(`H${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  ws.getCell(`I${akhiriBaris}`).value = parseFloat(
+    TotalPerhitunganRealisasiKeuanganKeseluruhan,
+  ).toFixed(2)
+  ws.getCell(`I${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  //Hitung Deviasi Keuangan
+  ws.getCell(`J${akhiriBaris}`).value = parseFloat(
+    TotalPerhitunganRealisasiKeuanganKeseluruhan - TotalPerhitunganRencanaKeuanganKeseluruhan,
+  ).toFixed(2)
+  ws.getCell(`J${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  //hitung DFK
+  ws.getCell(`K${akhiriBaris}`).value = parseFloat(
+    TotalPerhitunganRealisasiFisikKeseluruhan - TotalPerhitunganRealisasiKeuanganKeseluruhan,
+  ).toFixed(2)
+  ws.getCell(`K${akhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  // // Merge kolom E–L dan beri warna latar
+  // ws.mergeCells(`E${akhiriBaris}:L${akhiriBaris}`)
+  // const mergedTotal = ws.getCell(`E${akhiriBaris}`)
+  // mergedTotal.alignment = { vertical: 'middle', horizontal: 'center' }
 
   // 🔹 Tambahkan border dan latar warna agar serasi
+  // for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']) {
+  //   ws.getCell(`${col}${akhiriBaris}`).border = {
+  //     top: { style: 'thin' },
+  //     left: { style: 'thin' },
+  //     bottom: { style: 'thin' },
+  //     right: { style: 'thin' },
+  //   }
+  //   ws.getCell(`${col}${akhiriBaris}`).fill = {
+  //     type: 'pattern',
+  //     pattern: 'solid',
+  //     fgColor: { argb: 'D9D9D9' }, // Warna abu-abu
+  //   }
+  // }
+
+  //berikan warna abu dan bold pada total per group berikan warna merah jika deviasi minus dan tak lupa border
   for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']) {
-    ws.getCell(`${col}${akhiriBaris}`).border = {
+    const cell = ws.getCell(`${col}${akhiriBaris}`)
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFd3d3d3' }, // Warna abu-abu
+    }
+    if (col === 'G' || col === 'K') {
+      if (parseFloat(cell.value) < 0) {
+        cell.font = { bold: true }
+        cell.font = { color: { argb: 'FFFF0000' }, bold: true }
+      } else {
+        cell.font = { bold: true }
+      }
+    } else {
+      if (parseFloat(cell.value) < 0) {
+        cell.font = { bold: true }
+        cell.font = { color: { argb: 'FFFF0000' }, bold: true }
+      } else {
+        cell.font = { bold: true }
+      }
+    }
+
+    //tambahkan border
+    cell.border = {
       top: { style: 'thin' },
       left: { style: 'thin' },
       bottom: { style: 'thin' },
       right: { style: 'thin' },
     }
-    ws.getCell(`${col}${akhiriBaris}`).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'D9D9D9' }, // Warna abu-abu
+  }
+  //End tambahan untuk total fisik dan keuangan keseluruhan
+
+  //start PAGE 2 ========================================================
+  //start buat halaman baru hanya menampilkan kesimpulan tiap grupnya
+  ws2 = wb.addWorksheet('Summary')
+  ws2.addRow(['KESIMPULAN PROGRESS PEKERJAAN']).font = { bold: true, size: 15 }
+  ws2.addRow(['SATKER PJN WILAYAH III PROV.JABAR']).font = { bold: true, size: 15 }
+  ws2.addRow([]) // baris kosong
+  ws2.addRow([`Generated on: ${formattedDate}`]).style = {
+    font: { italic: true, size: 10 },
+    alignment: { horizontal: 'right' },
+  }
+
+  const summaryHeaders1 = [
+    'No',
+    'Unit Kerja',
+    'Total Pagu (Rp Ribu)',
+    'Total Pagu Setelah Efisiensi (Rp Ribu)',
+    'Progress Fisik',
+    '',
+    '',
+    'Progress Keuangan',
+    '',
+    '',
+    'DFK',
+  ]
+  const summaryHeaders2 = [
+    '',
+    '',
+    '',
+    '',
+    'Rencana',
+    'Realisasi',
+    'Deviasi',
+    'Rencana',
+    'Realisasi',
+    'Deviasi',
+    '',
+  ]
+  ws2.addRow(summaryHeaders1)
+  ws2.addRow(summaryHeaders2)
+
+  ws2.getRow(5).eachCell((cell) => {
+    cell.style = headerStyle
+  })
+  ws2.getRow(6).eachCell((cell) => {
+    cell.style = headerStyle
+  })
+
+  const addSummaryToSheet = (groupName, index) => {
+    const row = ws2.addRow([
+      index + 1,
+      groupName,
+      tempTotalPaguKeseluruhan[index].toLocaleString('id-ID'),
+      tempTotalPaguEfisiensiKeseluruhan[index].toLocaleString('id-ID'),
+      parseFloat(tempTotalPerhitunganRencanaFisikKeseluruhanSummary[index]).toFixed(2),
+      parseFloat(tempTotalPerhitunganRealisasiFisikKeseluruhanSummary[index]).toFixed(2),
+      parseFloat(
+        tempTotalPerhitunganRealisasiFisikKeseluruhanSummary[index] -
+          tempTotalPerhitunganRencanaFisikKeseluruhanSummary[index],
+      ).toFixed(2),
+
+      parseFloat(tempTotalPerhitunganRencanaKeuanganKeseluruhanSummary[index]).toFixed(2),
+      parseFloat(tempTotalPerhitunganRealisasiKeuanganKeseluruhanSummary[index]).toFixed(2),
+      parseFloat(
+        tempTotalPerhitunganRealisasiKeuanganKeseluruhanSummary[index] -
+          tempTotalPerhitunganRencanaKeuanganKeseluruhanSummary[index],
+      ).toFixed(2),
+
+      parseFloat(
+        tempTotalPerhitunganRealisasiFisikKeseluruhanSummary[index] -
+          tempTotalPerhitunganRealisasiKeuanganKeseluruhanSummary[index],
+      ).toFixed(2),
+    ])
+    row.getCell(2).style = {
+      alignment: { vertical: 'middle' },
+    }
+    row.getCell(1).style = {
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      font: { bold: true },
+    }
+
+    //berikan warna merah pada deviasi yang minus
+    const deviasiFisikCell = row.getCell(7)
+    const deviasiKeuanganCell = row.getCell(10)
+    const DFK = row.getCell(11)
+    if (parseFloat(deviasiFisikCell.value) < 0) {
+      deviasiFisikCell.font = { color: { argb: 'FFFF0000' } }
+    }
+    if (parseFloat(deviasiKeuanganCell.value) < 0) {
+      deviasiKeuanganCell.font = { color: { argb: 'FFFF0000' } }
+    }
+    if (parseFloat(DFK.value) < 0) {
+      DFK.font = { color: { argb: 'FFFF0000' } }
+    }
+
+    //beri border pada setiap cell
+    for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']) {
+      const cell = row.getCell(`${col}`)
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } },
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } },
+        right: { style: 'thin', color: { argb: 'FF000000' } },
+      }
     }
   }
+
+  addSummaryToSheet('Satker PJN III PROV JABAR ', 0)
+  addSummaryToSheet('PPK 3.1 ', 1)
+  addSummaryToSheet('PPK 3.2 ', 2)
+  addSummaryToSheet('PPK 3.3 ', 3)
+  addSummaryToSheet('PPK 3.4 ', 4)
+
+  //Buat Kalkulasi untuk Jumlah Keseluruhan
+  const summaryAkhiriBaris = ws2.lastRow.number + 1
+  ws2.mergeCells(`A${summaryAkhiriBaris}:B${summaryAkhiriBaris}`)
+  ws2.getCell(`A${summaryAkhiriBaris}`).value = 'TOTAL KESELURUHAN:'
+  ws2.getCell(`A${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`A${summaryAkhiriBaris}`).font = { bold: true, size: 12 }
+  ws2.getCell(`C${summaryAkhiriBaris}`).value = TotalPaguKeseluruhan.toLocaleString('id-ID')
+  ws2.getCell(`C${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`C${summaryAkhiriBaris}`).font = { bold: true, size: 12 }
+  ws2.getCell(`D${summaryAkhiriBaris}`).value =
+    TotalPaguEfisiensiKeseluruhan.toLocaleString('id-ID')
+  ws2.getCell(`D${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`D${summaryAkhiriBaris}`).font = { bold: true, size: 12 }
+
+  //Perhitungan Fisik dan Keuangan Keseluruhan
+
+  let RencanFisikSummary =
+    (tempTotalRencanaFisikKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+
+  let RealisasiFisikSummary =
+    (tempTotalRealisasiFisikKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+
+  let RencanKeuanganSummary =
+    (tempTotalRencanaKeuanganKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+
+  let RealisasiKeuanganSummary =
+    (tempTotalRealisasiKeuanganKeseluruhan.reduce((a, b) => a + b, 0) /
+      tempTotalPaguEfisiensiKeseluruhan.reduce((a, b) => a + b, 0)) *
+    100
+
+  ws2.getCell(`E${summaryAkhiriBaris}`).value = parseFloat(RencanFisikSummary).toFixed(2)
+  ws2.getCell(`E${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`F${summaryAkhiriBaris}`).value = parseFloat(RealisasiFisikSummary).toFixed(2)
+  ws2.getCell(`F${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`G${summaryAkhiriBaris}`).value = parseFloat(
+    RealisasiFisikSummary - RencanFisikSummary,
+  ).toFixed(2)
+  ws2.getCell(`G${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`H${summaryAkhiriBaris}`).value = parseFloat(RencanKeuanganSummary).toFixed(2)
+  ws2.getCell(`H${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`I${summaryAkhiriBaris}`).value = parseFloat(RealisasiKeuanganSummary).toFixed(2)
+  ws2.getCell(`I${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`J${summaryAkhiriBaris}`).value = parseFloat(
+    RealisasiKeuanganSummary - RencanKeuanganSummary,
+  ).toFixed(2)
+  ws2.getCell(`J${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+  ws2.getCell(`K${summaryAkhiriBaris}`).value = parseFloat(
+    RealisasiFisikSummary - RealisasiKeuanganSummary,
+  ).toFixed(2)
+  ws2.getCell(`K${summaryAkhiriBaris}`).alignment = { vertical: 'middle', horizontal: 'center' }
+
+  //berikan jarak dan styling pada total keseluruhan di halaman 2
+  for (let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']) {
+    const cell = ws2.getCell(`${col}${summaryAkhiriBaris}`)
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFd3d3d3' }, // Warna abu-abu
+    }
+    if (col) {
+      if (parseFloat(cell.value) < 0) {
+        cell.font = { bold: true }
+        cell.font = { color: { argb: 'FFFF0000' }, bold: true }
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      } else {
+        cell.font = { bold: true }
+      }
+    }
+    //tambahkan border
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    }
+  }
+
+  ws2.mergeCells('A5:A6') // Merge kolom 'No'
+  ws2.mergeCells('B5:B6') // Merge kolom 'Unit Kerja'
+  ws2.mergeCells('C5:C6') // Merge kolom 'Total Pagu'
+  ws2.mergeCells('D5:D6') // Merge kolom 'Total Pagu Setelah Efisiensi'
+  ws2.mergeCells('K5:K6') // Merge kolom 'DFK'
+  ws2.mergeCells('E5:G5') // Merge untuk 'Progress Fisik'
+  ws2.mergeCells('H5:J5') // Merge untuk 'Progress Keuangan'
+
+  //berikan jarak
+  ws2.getColumn(1).width = 5 // No
+  ws2.getColumn(2).width = 25 // Unit Kerja
+  ws2.getColumn(3).width = 20 // Pagu Effisiensi
+  ws2.getColumn(4).width = 20 // Pagu Effisiensi
+  ws2.getColumn(5).width = 10 // Rencana Fisik
+  ws2.getColumn(6).width = 10 // Realisasi Fisik
+  ws2.getColumn(7).width = 10 // Deviasi Fisik
+  ws2.getColumn(8).width = 10 // Rencana Keuangan
+  ws2.getColumn(9).width = 10 // Realisasi Keuangan
+  ws2.getColumn(10).width = 10 // Deviasi Keuangan
+  ws2.getColumn(11).width = 10 // DFK
+
+  //end PAGE 2 ========================================================
 
   // Save the workbook to file
   await wb.xlsx.writeBuffer().then((buffer) => {
