@@ -37,7 +37,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           rows.forEach((row) => {
             const bgColor = row.getAttribute('bgcolor')?.toUpperCase() || null
-            if (bgColor == null) {
+            console.log(bgColor);
+            
+            if (bgColor == null || bgColor == "#FFFF00") {
               const tds = row.querySelectorAll('td')
               const kode = tds[1]?.innerText.trim() || null
               if (!kode) return
@@ -117,7 +119,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           rows.forEach((row) => {
             const bgColor = row.getAttribute('bgcolor')?.toUpperCase() || null
-            if (bgColor == null) {
+            if (bgColor == null || bgColor == "#FFFF00") {
               const tds = row.querySelectorAll('td')
               const kode = tds[1]?.innerText.trim() || null
               if (!kode) return

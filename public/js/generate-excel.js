@@ -167,14 +167,11 @@ async function generateExcel2(data) {
   const wb = new ExcelJS.Workbook()
   const ws = wb.addWorksheet('Results')
 
-  const row1 = ws.addRow(['LAPORAN PROGRESS PEKERJAAN'])
-  const row2 = ws.addRow(['SATKER PJN WILAYAH III PROV.JABAR'])
+  const cell1 = ws.getCell('A1')
+  const cell2 = ws.getCell('A2')
 
-  ws.mergeCells('A1:L1')
-  ws.mergeCells('A2:L2')
-
-  const cell1 = row1.getCell(1)
-  const cell2 = row2.getCell(1)
+  cell1.value = 'LAPORAN PROGRESS PEKERJAAN'
+  cell2.value = 'SATKER PJN WILAYAH III PROV.JABAR'
 
   cell1.font = { bold: true, size: 15 }
   cell1.alignment = { horizontal: 'center', vertical: 'middle' }
@@ -182,7 +179,10 @@ async function generateExcel2(data) {
   cell2.font = { bold: true, size: 15 }
   cell2.alignment = { horizontal: 'center', vertical: 'middle' }
 
-  ws.addRow([]) // baris kosong
+  ws.mergeCells('A1:L1')
+  ws.mergeCells('A2:L2')
+
+  ws.addRow([])
 
   const date = new Date()
   const formattedDate = date.toLocaleDateString('id-ID', {

@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (bulanSekarang < 2) {
                       console.log('Data untuk bulan sebelumnya tidak tersedia.')
                     } else {
+                      
                       let dataBulanSekarang = dataAktif.bulan[bulanSekarang]
                       let dataBulanKemarin = dataAktif.bulan[bulanSekarang - 1]
 
@@ -165,6 +166,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             const blokir = getNumber(cells[11])
             const kode = getText(cells[1])
 
+            console.log(nama)
+
             function hapusTandaKurung(nama) {
               return nama
                 .replace(/\(\s*(.*?)\s*\)/g, '$1')
@@ -175,11 +178,12 @@ document.addEventListener('DOMContentLoaded', async function () {
               (item) => hapusTandaKurung(item.nama) == hapusTandaKurung(nama),
             )
             if (itemDitemukan) {
+              
               const rencana_keuangan = parseToFloat(await findRencanaKeuanganBulanIni(kode))
               const realisasi_keuangan = parseToFloat(getText(cells[13]))
               const rencana_fisik = parseToFloat(await findRencanaFisikBulanIni(kode))
               const realisasi_fisik = parseToFloat(getText(cells[14]))
-
+              
               let hasilKalkulasi = pagu - blokir
               itemDitemukan.hasil_effisiensi =
                 (itemDitemukan.hasil_effisiensi == null ? 0 : itemDitemukan.hasil_effisiensi) +
@@ -191,6 +195,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               itemDitemukan.array_rencana_fisik.push(rencana_fisik)
               itemDitemukan.array_realisasi_fisik.push(realisasi_fisik)
               itemDitemukan.array_pagu.push(pagu)
+              
             }
 
             if (
