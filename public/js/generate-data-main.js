@@ -36,12 +36,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let bulanSekarang = new Date().getMonth()
                     let tanggalSekarang = new Date().getDate()
 
-                    if (bulanSekarang < 2) {
+                    if (bulanSekarang == 0) {
                       console.log('Data untuk bulan sebelumnya tidak tersedia.')
                     } else {
-                      
-                      let dataBulanSekarang = dataAktif.bulan[bulanSekarang]
-                      let dataBulanKemarin = dataAktif.bulan[bulanSekarang - 1]
+                      // let dataBulanSekarang = dataAktif.bulan[bulanSekarang]
+                      // let dataBulanKemarin = dataAktif.bulan[bulanSekarang - 1]
+
+                      let dataBulanSekarang = dataAktif.bulan[bulanSekarang] / 100
+                      let dataBulanKemarin = dataAktif.bulan[bulanSekarang - 1] / 100
 
                       let tahunSekarang = new Date().getFullYear()
                       let jumlahHariBulanIni = new Date(
@@ -54,6 +56,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ((dataBulanSekarang - dataBulanKemarin) / jumlahHariBulanIni) *
                           tanggalSekarang +
                         dataBulanKemarin
+
                       resolve(hasil.toFixed(2))
                     }
                     // resolve(hasil)
@@ -90,8 +93,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                   if (dataAktif) {
                     let bulanSekarang = new Date().getMonth()
                     let tanggalSekarang = new Date().getDate()
-
-                    if (bulanSekarang < 2) {
+                    if (bulanSekarang == 0) {
                       console.log('Data untuk bulan sebelumnya tidak tersedia.')
                     } else {
                       let dataBulanSekarang = dataAktif.bulan[bulanSekarang]
@@ -166,8 +168,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             const blokir = getNumber(cells[11])
             const kode = getText(cells[1])
 
-            console.log(nama)
-
             function hapusTandaKurung(nama) {
               return nama
                 .replace(/\(\s*(.*?)\s*\)/g, '$1')
@@ -177,13 +177,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             itemDitemukan = dataResultSimpenan.find(
               (item) => hapusTandaKurung(item.nama) == hapusTandaKurung(nama),
             )
+
             if (itemDitemukan) {
-              
               const rencana_keuangan = parseToFloat(await findRencanaKeuanganBulanIni(kode))
               const realisasi_keuangan = parseToFloat(getText(cells[13]))
               const rencana_fisik = parseToFloat(await findRencanaFisikBulanIni(kode))
               const realisasi_fisik = parseToFloat(getText(cells[14]))
-              
+
               let hasilKalkulasi = pagu - blokir
               itemDitemukan.hasil_effisiensi =
                 (itemDitemukan.hasil_effisiensi == null ? 0 : itemDitemukan.hasil_effisiensi) +
@@ -195,11 +195,10 @@ document.addEventListener('DOMContentLoaded', async function () {
               itemDitemukan.array_rencana_fisik.push(rencana_fisik)
               itemDitemukan.array_realisasi_fisik.push(realisasi_fisik)
               itemDitemukan.array_pagu.push(pagu)
-              
             }
 
             if (
-              (jenis === 'Swakelola' || jenis === 'AU') &&
+              (jenis === 'Swakelola' || jenis === 'AU' || jenis == 'E-purchasing Mini Kompetisi') &&
               (bgColor === '' || bgColor === '#FFFFFF')
             ) {
               const vol = getText(cells[3])
@@ -238,22 +237,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                             : null
 
                 if (firstDigit === 'H' && secondDigit) {
-                  if (secondDigit == 'A') {
+                  if (secondDigit == 'A' || secondDigit == 'H') {
                     resultArray = resultA
                   }
-                  if (secondDigit == 'B' || secondDigit == 'H') {
+                  if (secondDigit == 'B' || secondDigit == 'I' || secondDigit == 'O') {
                     resultArray = resultB
                   }
-                  if (secondDigit == 'C' || secondDigit == 'I') {
+                  if (secondDigit == 'C' || secondDigit == 'J') {
                     resultArray = resultC
                   }
-                  if (secondDigit == 'D' || secondDigit == 'J') {
+                  if (secondDigit == 'D' || secondDigit == 'K') {
                     resultArray = resultD
                   }
                   if (
                     secondDigit == 'E' ||
                     secondDigit == 'F' ||
-                    secondDigit == 'K' ||
+                    // secondDigit == 'K' ||
                     secondDigit == 'L' ||
                     secondDigit == 'M'
                   ) {
@@ -278,6 +277,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                   } else if (secondDigit === 'D') {
                     resultArray = resultD
                   } else if (
+                    secondDigit === 'E' ||
                     secondDigit === 'I' ||
                     secondDigit === 'F' ||
                     secondDigit === 'G' ||
@@ -420,18 +420,20 @@ document.addEventListener('DOMContentLoaded', async function () {
               if (kodeParts.length == 8) {
                 const firstDigit = kodeParts[7][0]
 
-                const resultArray =
-                  firstDigit === 'A'
-                    ? resultA
-                    : firstDigit === 'B'
-                      ? resultB
-                      : firstDigit === 'C'
-                        ? resultC
-                        : firstDigit === 'D'
-                          ? resultD
-                          : kodeParts[7] == 'E'
-                            ? resultB // Assuming 'E' is also part of A
-                            : null
+                const resultArray = null
+                //   firstDigit === 'A'
+                //     ? resultA
+                //     : firstDigit === 'B'
+                //       ? resultB
+                //       : firstDigit === 'C'
+                //         ? resultC
+                //         : firstDigit === 'D'
+                //           ? resultD
+                //           : firstDigit === 'H'
+                //             ? resultB
+                //             : kodeParts[7] == 'E'
+                //               ? resultB // Assuming 'E' is also part of A
+                //               : null
 
                 if (resultArray) {
                   resultSimpenan.push({
