@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (
-              (jenis === 'Swakelola' || jenis === 'AU' || jenis == 'E-purchasing Mini Kompetisi') &&
+              (jenis === 'Swakelola' || jenis === 'AU') &&
               (bgColor === '' || bgColor === '#FFFFFF')
             ) {
               const vol = getText(cells[3])
@@ -420,20 +420,20 @@ document.addEventListener('DOMContentLoaded', async function () {
               if (kodeParts.length == 8) {
                 const firstDigit = kodeParts[7][0]
 
-                const resultArray = null
-                //   firstDigit === 'A'
-                //     ? resultA
-                //     : firstDigit === 'B'
-                //       ? resultB
-                //       : firstDigit === 'C'
-                //         ? resultC
-                //         : firstDigit === 'D'
-                //           ? resultD
-                //           : firstDigit === 'H'
-                //             ? resultB
-                //             : kodeParts[7] == 'E'
-                //               ? resultB // Assuming 'E' is also part of A
-                //               : null
+                const resultArray =
+                  firstDigit === 'A'
+                    ? resultA
+                    : firstDigit === 'B'
+                      ? resultB
+                      : firstDigit === 'C'
+                        ? resultC
+                        : firstDigit === 'D'
+                          ? resultD
+                          : firstDigit === 'H'
+                            ? resultB
+                            : kodeParts[7] == 'E'
+                              ? resultB // Assuming 'E' is also part of A
+                              : null
 
                 if (resultArray) {
                   resultSimpenan.push({
@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     kode: kode,
                     pagu: null,
                     hasil_effisiensi: null,
-                    kode_result: firstDigit == 'E' ? 'B' : firstDigit,
+                    kode_result: (firstDigit == 'E' || firstDigit == 'H') ? 'B' : firstDigit,
                     array_kode: [],
                     array_rencana_keuangan: [],
                     array_realisasi_keuangan: [],
